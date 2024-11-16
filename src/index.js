@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Showlist from './components/pages/ShowList';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 스타일시트 추가
+import ShowList from './components/pages/ShowList'; // 음악 리스트 컴포넌트
+import MusicModal from './components/pages/MusicModal'; // 음악 추가/수정 모달 컴포넌트
+import MusicButton from './components/pages/MusicButton'; // 음악 추가 버튼 컴포넌트
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-
-function App() {
+const App = () => {
   const [musicData, setMusicData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,7 +40,6 @@ function App() {
     getMusic();
   }, []);
 
-  // 모달 열기 함수
   const openAddModal = () => {
     setFormData({
       id: '',
@@ -56,14 +53,12 @@ function App() {
     setShowModal(true);
   };
 
-  // 수정 모달 열기
   const openEditModal = (music) => {
     setFormData(music);
     setIsEdit(true);
     setShowModal(true);
   };
 
-  // 데이터 추가
   const postData = () => {
     const data = {
       title: formData.title,
@@ -87,7 +82,6 @@ function App() {
     };
   };
 
-  // 데이터 수정
   const updateData = () => {
     const id = formData.id;
     const data = {
@@ -112,7 +106,6 @@ function App() {
     };
   };
 
-  // 데이터 삭제
   const deleteData = () => {
     const id = formData.id;
     const xhr = new XMLHttpRequest();
@@ -132,80 +125,26 @@ function App() {
     <div className="container">
       <h1>음악 관리 시스템</h1>
 
-      {/* 음악 목록을 렌더링 */}
-      <Showlist musicData={musicData} openEditModal={openEditModal} />
+      {/* 음악 목록 렌더링 컴포넌트 */}
+      <ShowList musicData={musicData} openEditModal={openEditModal} />
 
-      {/* 음악 추가 버튼 */}
-      <Button variant="success" onClick={openAddModal}>
-        새 음악 추가
-      </Button>
+      {/* 음악 추가 버튼 컴포넌트 */}
+      <MusicButton openAddModal={openAddModal} />
 
-      {/* 모달 컴포넌트 */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{isEdit ? '음악 수정' : '새 음악 추가'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <input
-            type="text"
-            placeholder="제목"
-            className="form-control"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-          <input
-            type="date"
-            className="form-control mt-2"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="아티스트"
-            className="form-control mt-2"
-            value={formData.artist}
-            onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="레이블"
-            className="form-control mt-2"
-            value={formData.label}
-            onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="장르"
-            className="form-control mt-2"
-            value={formData.genre}
-            onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-            required
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            닫기
-          </Button>
-          {isEdit ? (
-            <>
-              <Button variant="warning" onClick={updateData}>
-                수정하기
-              </Button>
-              <Button variant="danger" onClick={deleteData}>
-                삭제하기
-              </Button>
-            </>
-          ) : (
-            <Button variant="primary" onClick={postData}>
-              추가하기
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
+      {/* 음악 추가/수정 모달 컴포넌트 */}
+      <MusicModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        formData={formData}
+        setFormData={setFormData}
+        isEdit={isEdit}
+        postData={postData}
+        updateData={updateData}
+        deleteData={deleteData}
+      />
     </div>
   );
-}
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
